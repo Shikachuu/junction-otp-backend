@@ -6,10 +6,10 @@ using System.Text;
 using System.Text.Json;
 using System.Web;
 
-namespace GoogleMapsApiTest
+namespace GoogleMapsApi
 {
 
-    class Route
+    public class Route
     {
         public string Polyline;
         public static Route ParseFromJson(JsonElement routeJsonObject)
@@ -20,7 +20,7 @@ namespace GoogleMapsApiTest
             return route;
         }
     }
-    class GoogleApiFetcher
+    public class GoogleApiFetcher
     {
 
 
@@ -89,13 +89,13 @@ namespace GoogleMapsApiTest
             return responseFromServer;
         }
 
-        public string FetchRoutes(string origin, string destination, string travelMode, DateTimeOffset departureTime)
+        public string FetchBestRouteRoutes(string origin, string destination, string travelMode, DateTimeOffset departureTime)
         {
             return "";
         }
 
 
-        public string DemoFetch()
+        public IEnumerable<Route> DemoFetch()
         {
 
             //double geo_x = 47.483543, geo_y = 19.065962;
@@ -108,7 +108,7 @@ namespace GoogleMapsApiTest
             string destination = "Westend, Budapest, Váci út 1-3, 1062";
             string travelMode = "transit";
 
-            FetchRoutes(origin, destination, travelMode, now);
+            //FetchRoutes(origin, destination, travelMode, now);
 
             string resultJsonString = FetchRouteAsJson(origin, destination, travelMode, now);
 
@@ -126,7 +126,7 @@ namespace GoogleMapsApiTest
 
 
 
-            return resultJsonString;
+            return routes;
         }
     }
 }

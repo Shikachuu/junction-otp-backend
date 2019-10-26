@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,11 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="GoogleApiFetcher.cs.wtf" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="GoogleApiFetcher.cs.wtf" />
+    <ProjectReference Include="..\..\Common\Common.csproj" />
   </ItemGroup>
 
 </Project>
