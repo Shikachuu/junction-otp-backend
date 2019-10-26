@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "junctionx-backend", "junctionx-backend.csproj", "{86967ECB-1575-49AB-8024-45A6CFF12BA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "junctionx-backend", "Backend\junctionx-backend.csproj", "{28F36443-AAE3-49D3-8053-CE10C95C5B59}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleMapsApiTest", "GoogleMapsApiTest\GoogleMapsApiTest\GoogleMapsApiTest.csproj", "{5A02A212-0624-4700-83EE-406F67550C41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{86967ECB-1575-49AB-8024-45A6CFF12BA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86967ECB-1575-49AB-8024-45A6CFF12BA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{86967ECB-1575-49AB-8024-45A6CFF12BA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{86967ECB-1575-49AB-8024-45A6CFF12BA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28F36443-AAE3-49D3-8053-CE10C95C5B59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28F36443-AAE3-49D3-8053-CE10C95C5B59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28F36443-AAE3-49D3-8053-CE10C95C5B59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28F36443-AAE3-49D3-8053-CE10C95C5B59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A02A212-0624-4700-83EE-406F67550C41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A02A212-0624-4700-83EE-406F67550C41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A02A212-0624-4700-83EE-406F67550C41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A02A212-0624-4700-83EE-406F67550C41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
