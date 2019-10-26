@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: penisz123
     ports:
       - 5432:5432
-  adminer:
-    image: adminer
+  pgadmin:
+    image: adminer:4.7.4-standalone
     ports:
     - 80:8080
