@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     environment: 
       POSTGRES_PASSWORD: penisz123
+    ports:
+      - 5432:5432
   adminer:
     image: adminer
     ports:
