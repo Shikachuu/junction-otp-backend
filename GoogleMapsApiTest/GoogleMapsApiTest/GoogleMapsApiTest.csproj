@@ -5,4 +5,12 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="GoogleApiFetcher.cs.wtf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="GoogleApiFetcher.cs.wtf" />
+  </ItemGroup>
+
 </Project>
