@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Npgsql;
+using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -19,6 +22,13 @@ namespace GoogleMapsApi
             
             return route;
         }
+    }
+
+    public class RouteWithAtm
+    {
+        Atm atm;
+        Route routeFromDepartureToAtm;
+        Route routeFromAtmToDestination;
     }
     public class GoogleApiFetcher
     {
@@ -69,7 +79,7 @@ namespace GoogleMapsApi
             return responseFromServer;
         }
 
-        public string FetchRouteAsJson(string origin, string destination, string travelMode, DateTimeOffset departureTime)
+        public string FetchRoutesAsJson(string origin, string destination, string travelMode, DateTimeOffset departureTime)
         {
             long departureTimeAsLong = departureTime.ToUnixTimeSeconds();
             string departureTimeAsString = departureTimeAsLong.ToString();
@@ -91,9 +101,97 @@ namespace GoogleMapsApi
 
         public string FetchBestRouteRoutes(string origin, string destination, string travelMode, DateTimeOffset departureTime)
         {
+
             return "";
         }
 
+
+        public IEnumerable<Atm> FetchAtms(string polyline)
+        {
+
+            var query = "SELECT ST_Distance(ST_Transform(ST_LineFromEncodedPolyline('wow`HqbqsB}@u@QQwB_BCLBMhAv@DPFPFPBj@kFnRy@dDEd@wAbFcArDs@~BkAtDY~@m@xBa@pBaAhFCd@yCzLkDbN{EfReD`NeCtJaDrMeBzGe@tBuA|Fg@fB{@pCy@nCeApCs@fBk@zA{F`O]`AkBfF}@~AS@SE[Ec@CoEl@y@LmDvAoF~B_Bn@aAh@kAt@cDtBw@l@]RaCxG}@zCwBhGQh@QTe@TMBq@FQ@MBIBmBEcHIoDDyDIgBC_BEaBAiKOgCHm@Am@Cg@?e@?sCCMIgGYa@Cs@OICsAaA}@m@QOy@m@DOENqBuAyA{@y@e@EAGBcFmDuDiCAMSWYSGE'),23700),ST_Transform(ST_SetSRID(ST_MakePoint(19.074642,47.486211), 4326),23700));";
+
+
+            var connectionString = "Server=100.98.2.250;Port=5432;Database=postgres;User Id=postgres;Password=penisz123;";
+
+
+            using (var postgresConn = new NpgsqlConnection(connectionString))
+            {
+
+                postgresConn.Open();
+
+                NpgsqlCommand command = new NpgsqlCommand(query, postgresConn);
+                //var result = cmd.ExecuteScalar().ToString();
+                //Console.WriteLine(result);
+                command.ExecuteNonQuery();
+                using (NpgsqlDataReader reader = command.ExecuteReader()) {
+                    while (reader.Read())
+                    {
+                        yield return new Atm
+                        {
+                            AtmPosition = "dummy1",
+                            StreetName = "dummy2",
+                            UserFriendlyRoute = "dummy3",
+                        };
+                    }
+
+                }
+
+            }
+            //return "";
+
+
+            ////using (SqlConnection connection = new SqlConnection("postgresql://postgres:penisz123@100.98.2.250:5432/postgres"))
+            //using (SqlConnection connection = new SqlConnection(connectionString))
+            ////using (SqlConnection connection = new SqlConnection())
+            //{
+
+            //    using (SqlCommand command = new SqlCommand(query, connection))
+            //    {
+            //        connection.Open();
+            //        string result = (string)command.ExecuteScalar();
+            //        Console.WriteLine(result);
+            //        return result;
+            //    }
+            //}
+
+            //return null;
+        }
+
+        public RouteWithAtm FetchRouteIncludingAtm(string origin, string destination, string travelMode, Atm atm)
+        {
+            return null;
+        }
+
+
+        public IEnumerable<RouteWithAtm> FindAllRoutes(string origin, string destination, string travelMode)
+        {
+
+            DateTimeOffset now = DateTimeOffset.Now;
+            string resultJsonString = FetchRoutesAsJson(origin, destination, travelMode, now);
+
+            Console.WriteLine(resultJsonString);
+
+            byte[] resultJsonData = Encoding.UTF8.GetBytes(resultJsonString);
+            var reader = new Utf8JsonReader(resultJsonData);
+
+            var document = JsonDocument.Parse(resultJsonData);
+            var routesArray = document.RootElement.GetProperty("routes");
+
+            var initialRoutes = Enumerable.Select(routesArray.EnumerateArray(), jsonObject => Route.ParseFromJson(jsonObject));
+
+            var allAtms = Enumerable.Empty<Atm>();
+            foreach(var route in initialRoutes)
+            {
+                var atms = FetchAtms(route.Polyline);
+                allAtms = Enumerable.Concat(allAtms, atms);
+            }
+            // FetchRouteIncludingAtm(string origin, string destination, string travelMode, Atm atm)
+            var routes = Enumerable.Select(allAtms, atm => FetchRouteIncludingAtm(origin, destination, travelMode, atm));
+
+            return routes;
+
+        }
 
         public IEnumerable<Route> DemoFetch()
         {
@@ -102,7 +200,7 @@ namespace GoogleMapsApi
 
             // departure_time — Specifies the desired time of departure. 
             // You can specify the time as an integer in seconds since midnight, January 1, 1970 UTC.
-            DateTimeOffset now = DateTimeOffset.Now;
+            
             
             string origin = "Magyar Telekom Székház, Budapest, Könyves Kálmán krt. 36, 1097";
             string destination = "Westend, Budapest, Váci út 1-3, 1062";
@@ -110,19 +208,9 @@ namespace GoogleMapsApi
 
             //FetchRoutes(origin, destination, travelMode, now);
 
-            string resultJsonString = FetchRouteAsJson(origin, destination, travelMode, now);
+            FindAllRoutes(origin, destination, travelMode);
 
 
-            Console.WriteLine(resultJsonString);
-
-            byte[] resultJsonData = Encoding.UTF8.GetBytes(resultJsonString);
-            var reader = new Utf8JsonReader(resultJsonData);
-
-            var document = System.Text.Json.JsonDocument.Parse(resultJsonData);
-            var routesArray = document.RootElement.GetProperty("routes");
-
-            var routes = System.Linq.Enumerable.Select(routesArray.EnumerateArray(), jsonObject => Route.ParseFromJson(jsonObject));
-            
 
 
 
