@@ -11,7 +11,7 @@ namespace GoogleMapsApiTest
 
 
             GoogleApiFetcher googleApiFetcher = new GoogleApiFetcher();
-            googleApiFetcher.FetchAtms();
+            googleApiFetcher.DemoFetch();
 
             //var result = googleApiFetcher.DemoFetch();
 

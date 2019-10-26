@@ -22,18 +22,52 @@ namespace junctionx_backend.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Atm> Get()
+        public IEnumerable<RouteWithAtm> Get()
         {
             var googleApiFethcer = new GoogleApiFetcher();
-            var routes = googleApiFethcer.DemoFetch();
+            //var routes = googleApiFethcer.DemoFetch();
 
-
-            var atms = Enumerable.Select(routes, route => new Atm
+            var routes = new RouteWithAtm[]
             {
-                AtmPosition = route.Polyline
-            });
+                new RouteWithAtm
+                {
+                    atm = new Atm
+                    {
+                        AtmPosition = "47.5147282, 19.099011",
+                        ExpectedWaitTimeInMinutes = 3,
+                        StreetName = "Szezám utca",
+                    },
+                    routeFromAtmToDestination = new Route
+                    {
+                        Polyline = "wow`HqbqsB}@u@QQwB_BCLBMhAv@DPFPFPBj@kFnRy@dDEd@wAbFcArDs@~BkAtDY~@m@xBa@pBaAhFCd@yCzLkDbN{EfReD`NeCtJaDrMeBzGe@tBuA|Fg@fB{@pCy@nCeApCs@fBk@zA{F`O]`AkBfF}@~AS@SE[Ec@CoEl@y@LmDvAoF~B_Bn@aAh@kAt@cDtBw@l@]RaCxG}@zCwBhGQh@QTe@TMBq@FQ@MBIBmBEcHIoDDyDIgBC_BEaBAiKOgCHm@Am@Cg@?e@?sCCMIgGYa@Cs@OICsAaA}@m@QOy@m@DOENqBuAyA{@y@e@EAGBcFmDuDiCAMSWYSGE",
+                        UserInstructionsForRoute = "Mennyé előre",
+                    }
 
-            return atms;
+                }, 
+                new RouteWithAtm
+                {
+                    atm = new Atm
+                    {
+                        AtmPosition = "47.2147282, 19.199011",
+                        ExpectedWaitTimeInMinutes = 10,
+                        StreetName = "Kapa utca",
+                    },
+                    routeFromAtmToDestination = new Route
+                    {
+                        Polyline = "wow`HqbqsB}@u@QQwB_BCLBMhAv@DPFPFPBj@kFnRy@dDEd@wAbFcArDs@~BkAtDY~@m@xBa@pBaAhFCd@yCzLkDbN{EfReD`NeCtJaDrMeBzGe@tBuA|Fg@fB{@pCy@nCeApCs@fBk@zA{F`O]`AkBfF}@~AS@SE[Ec@CoEl@y@LmDvAoF~B_Bn@aAh@kAt@cDtBw@l@]RaCxG}@zCwBhGQh@QTe@TMBq@FQ@MBIBmBEcHIoDDyDIgBC_BEaBAiKOgCHm@Am@Cg@?e@?sCCMIgGYa@Cs@OICsAaA}@m@QOy@m@DOENqBuAyA{@y@e@EAGBcFmDuDiCAMSWYSGE",
+                        UserInstructionsForRoute = "Mennyé hátra",
+                    }
+                }
+            };
+
+            return routes;
+
+            //var atms = Enumerable.Select(routes, route => new Atm
+            //{
+            //    AtmPosition = route.
+            //});
+
+            //return atms;
 
             //var route = new Atm
             //{
