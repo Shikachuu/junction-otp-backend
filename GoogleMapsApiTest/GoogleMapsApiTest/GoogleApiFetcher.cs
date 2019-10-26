@@ -98,7 +98,7 @@ namespace GoogleMapsApiTest
         public string DemoFetch()
         {
 
-            double geo_x = 47.483543, geo_y = 19.065962;
+            //double geo_x = 47.483543, geo_y = 19.065962;
 
             // departure_time — Specifies the desired time of departure. 
             // You can specify the time as an integer in seconds since midnight, January 1, 1970 UTC.
