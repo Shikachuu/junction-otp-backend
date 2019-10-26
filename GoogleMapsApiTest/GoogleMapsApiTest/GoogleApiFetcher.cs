@@ -81,7 +81,7 @@ namespace GoogleMapsApiTest
             return responseFromServer;
         }
 
-        public static string FetchAtmsForRouteAsJson(Route route)
+        public string FetchAtmsForRouteAsJson(Route route)
         {
             string url = $"{AtmDatabaseUrl}?route={HttpUtility.UrlEncode(route.Polyline)}"; 
             string responseFromServer = FetchWebContent(url);
@@ -89,9 +89,9 @@ namespace GoogleMapsApiTest
             return responseFromServer;
         }
 
-        public static FetchRoutes(string origin, string destination, string travelMode, DateTimeOffset departureTime)
+        public string FetchRoutes(string origin, string destination, string travelMode, DateTimeOffset departureTime)
         {
-
+            return "";
         }
 
 
