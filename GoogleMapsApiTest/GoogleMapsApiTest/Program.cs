@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GoogleMapsApi;
+using System;
 
 namespace GoogleMapsApiTest
 {
@@ -8,8 +9,11 @@ namespace GoogleMapsApiTest
         {
             Console.WriteLine("Hello World!");
 
+
             GoogleApiFetcher googleApiFetcher = new GoogleApiFetcher();
-            var result = googleApiFetcher.DemoFetch();
+            googleApiFetcher.FetchAtms();
+
+            //var result = googleApiFetcher.DemoFetch();
 
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GoogleMapsApi;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -23,17 +24,26 @@ namespace junctionx_backend.Controllers
         [HttpGet]
         public IEnumerable<Atm> Get()
         {
+            var googleApiFethcer = new GoogleApiFetcher();
+            var routes = googleApiFethcer.DemoFetch();
 
-            
-            var route = new Atm
+
+            var atms = Enumerable.Select(routes, route => new Atm
             {
-                AtmPosition = "todo",
-                StreetName = "todo",
-                UserFriendlyRoute = "todo"
-            };
+                AtmPosition = route.Polyline
+            });
 
+            return atms;
 
-            return new Atm[] { route };
+            //var route = new Atm
+            //{
+            //    AtmPosition = "todo",
+            //    StreetName = "todo",
+            //    UserFriendlyRoute = "todo"
+            //};
+            //
+            //
+            //return new Atm[] { route };
 
             //var rng = new Random();
             //return Enumerable.Range(1, 5).Select(index => new WeatherForecast

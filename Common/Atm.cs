@@ -1,6 +1,6 @@
 using System;
 
-namespace junctionx_backend
+namespace GoogleMapsApi
 {
     public class Atm
     {
