@@ -1,13 +1,13 @@
 version: "3.0"
 services:
   postgis:
-    image: mdillon/postgis:9.5-alpine
+    image: otp-postgres:dev
+    build: 
+      context: ./init
+      dockerfile: Dockerfile
     environment: 
       POSTGRES_PASSWORD: penisz123
-    volumes: 
-     # - ./db-backup:/var/lib/postgresql/data
-      - ./init:/docker-entrypoint-initdb.d/:ro
   adminer:
     image: adminer
     ports:
-    - 8080:8080
+    - 80:8080
