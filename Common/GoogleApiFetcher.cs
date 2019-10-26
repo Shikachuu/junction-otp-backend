@@ -12,24 +12,6 @@ using System.Web;
 namespace GoogleMapsApi
 {
 
-    public class Route
-    {
-        public string Polyline;
-        public static Route ParseFromJson(JsonElement routeJsonObject)
-        {
-            Route route = new Route();
-            route.Polyline = routeJsonObject.GetProperty("overview_polyline").GetProperty("points").GetString();
-            
-            return route;
-        }
-    }
-
-    public class RouteWithAtm
-    {
-        Atm atm;
-        Route routeFromDepartureToAtm;
-        Route routeFromAtmToDestination;
-    }
     public class GoogleApiFetcher
     {
 
@@ -88,6 +70,8 @@ namespace GoogleMapsApi
 
             string responseFromServer = FetchWebContent(url);
 
+            Console.WriteLine(responseFromServer);
+
             return responseFromServer;
         }
 
@@ -99,11 +83,11 @@ namespace GoogleMapsApi
             return responseFromServer;
         }
 
-        public string FetchBestRouteRoutes(string origin, string destination, string travelMode, DateTimeOffset departureTime)
-        {
+        //public string FetchBestRouteRoutes(string origin, string destination, string travelMode, DateTimeOffset departureTime)
+        //{
 
-            return "";
-        }
+        //    return "";
+        //}
 
 
         public IEnumerable<Atm> FetchAtms(string polyline)
@@ -131,7 +115,7 @@ namespace GoogleMapsApi
                         {
                             AtmPosition = "dummy1",
                             StreetName = "dummy2",
-                            UserFriendlyRoute = "dummy3",
+                            ExpectedWaitTimeInMinutes = 20,
                         };
                     }
 
@@ -160,17 +144,29 @@ namespace GoogleMapsApi
 
         public RouteWithAtm FetchRouteIncludingAtm(string origin, string destination, string travelMode, Atm atm)
         {
-            return null;
+            DateTimeOffset now = DateTimeOffset.Now;
+            var routesToAtm = FetchRoutes(origin, atm.AtmPosition, travelMode, now);
+
+            DateTimeOffset expectedDepartureTimeFromAtm = now.AddMinutes(atm.ExpectedWaitTimeInMinutes);
+
+            var routesFromAtm = FetchRoutes(atm.AtmPosition, destination, travelMode, expectedDepartureTimeFromAtm);
+
+            var finalRoute = new RouteWithAtm
+            {
+                atm = atm,
+                routeFromDepartureToAtm = routesToAtm.First(),
+                routeFromAtmToDestination = routesFromAtm.First(),
+            };
+
+
+            return finalRoute;
         }
 
 
-        public IEnumerable<RouteWithAtm> FindAllRoutes(string origin, string destination, string travelMode)
+        public IEnumerable<Route> FetchRoutes(string origin, string destination, string travelMode, DateTimeOffset departureTime)
         {
+            string resultJsonString = FetchRoutesAsJson(origin, destination, travelMode, departureTime);
 
-            DateTimeOffset now = DateTimeOffset.Now;
-            string resultJsonString = FetchRoutesAsJson(origin, destination, travelMode, now);
-
-            Console.WriteLine(resultJsonString);
 
             byte[] resultJsonData = Encoding.UTF8.GetBytes(resultJsonString);
             var reader = new Utf8JsonReader(resultJsonData);
@@ -178,7 +174,27 @@ namespace GoogleMapsApi
             var document = JsonDocument.Parse(resultJsonData);
             var routesArray = document.RootElement.GetProperty("routes");
 
-            var initialRoutes = Enumerable.Select(routesArray.EnumerateArray(), jsonObject => Route.ParseFromJson(jsonObject));
+            var routes = Enumerable.Select(routesArray.EnumerateArray(), jsonObject => Route.ParseFromJson(jsonObject));
+
+            return routes;
+        }
+
+        public IEnumerable<RouteWithAtm> FindAllRoutes(string origin, string destination, string travelMode)
+        {
+
+            DateTimeOffset now = DateTimeOffset.Now;
+            //string resultJsonString = FetchRoutesAsJson(origin, destination, travelMode, now);
+
+            //Console.WriteLine(resultJsonString);
+
+            //byte[] resultJsonData = Encoding.UTF8.GetBytes(resultJsonString);
+            //var reader = new Utf8JsonReader(resultJsonData);
+
+            //var document = JsonDocument.Parse(resultJsonData);
+            //var routesArray = document.RootElement.GetProperty("routes");
+
+            //var initialRoutes = Enumerable.Select(routesArray.EnumerateArray(), jsonObject => Route.ParseFromJson(jsonObject));
+            var initialRoutes = FetchRoutes(origin, destination, travelMode, now);
 
             var allAtms = Enumerable.Empty<Atm>();
             foreach(var route in initialRoutes)
@@ -193,7 +209,7 @@ namespace GoogleMapsApi
 
         }
 
-        public IEnumerable<Route> DemoFetch()
+        public IEnumerable<RouteWithAtm> DemoFetch()
         {
 
             //double geo_x = 47.483543, geo_y = 19.065962;
@@ -208,7 +224,7 @@ namespace GoogleMapsApi
 
             //FetchRoutes(origin, destination, travelMode, now);
 
-            FindAllRoutes(origin, destination, travelMode);
+            var routes = FindAllRoutes(origin, destination, travelMode);
 
 
 

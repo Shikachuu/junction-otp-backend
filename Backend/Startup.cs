@@ -36,7 +36,6 @@ namespace junctionx_backend
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 
