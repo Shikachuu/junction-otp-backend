@@ -1,0 +1,12 @@
+version: "3.0"
+services:
+  postgis:
+    image: mdillon/postgis:9.5-alpine
+    environment: 
+      POSTGRES_PASSWORD: penisz123
+    volumes: 
+      - /db-backup:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    ports:
+    - 8080:8080
