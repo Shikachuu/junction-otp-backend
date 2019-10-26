@@ -38,13 +38,12 @@ namespace GoogleMapsApiTest
 
 
         readonly string API_KEY = "AIzaSyDf0hWOKngCVCBWZZ0OohTGIproR_VsLYc";
-        readonly string BaseUrl = "https://maps.googleapis.com/maps/api/directions/json?";
+        readonly string GoogleApiBaseUrl = "https://maps.googleapis.com/maps/api/directions/json";
+        readonly string AtmDatabaseUrl = "";
 
-        public string FetchRouteAsJson(string origin, string destination, string travelMode, DateTimeOffset departureTime)
+
+        public static string FetchWebContent(string url)
         {
-            long departureTimeAsLong = departureTime.ToUnixTimeSeconds();
-            string departureTimeAsString = departureTimeAsLong.ToString();
-            string url = $"{BaseUrl}origin={HttpUtility.UrlEncode(origin)}&destination={HttpUtility.UrlEncode(destination)}&mode={travelMode}&departure_time={departureTimeAsString}&key={API_KEY}";
 
             // Create a request for the URL. 		
             WebRequest request = WebRequest.Create(url);
@@ -61,7 +60,7 @@ namespace GoogleMapsApiTest
             // Read the content.
             string responseFromServer = reader.ReadToEnd();
             // Display the content.
-            
+
             // Cleanup the streams and the response.
             reader.Close();
             dataStream.Close();
@@ -69,6 +68,33 @@ namespace GoogleMapsApiTest
 
             return responseFromServer;
         }
+
+        public string FetchRouteAsJson(string origin, string destination, string travelMode, DateTimeOffset departureTime)
+        {
+            long departureTimeAsLong = departureTime.ToUnixTimeSeconds();
+            string departureTimeAsString = departureTimeAsLong.ToString();
+            string url = $"{GoogleApiBaseUrl}?origin={HttpUtility.UrlEncode(origin)}&destination={HttpUtility.UrlEncode(destination)}&mode={travelMode}&departure_time={departureTimeAsString}&key={API_KEY}";
+
+
+            string responseFromServer = FetchWebContent(url);
+
+            return responseFromServer;
+        }
+
+        public static string FetchAtmsForRouteAsJson(Route route)
+        {
+            string url = $"{AtmDatabaseUrl}?route={HttpUtility.UrlEncode(route.Polyline)}"; 
+            string responseFromServer = FetchWebContent(url);
+
+            return responseFromServer;
+        }
+
+        public static FetchRoutes(string origin, string destination, string travelMode, DateTimeOffset departureTime)
+        {
+
+        }
+
+
         public string DemoFetch()
         {
 
@@ -81,6 +107,8 @@ namespace GoogleMapsApiTest
             string origin = "Magyar Telekom Székház, Budapest, Könyves Kálmán krt. 36, 1097";
             string destination = "Westend, Budapest, Váci út 1-3, 1062";
             string travelMode = "transit";
+
+            FetchRoutes(origin, destination, travelMode, now);
 
             string resultJsonString = FetchRouteAsJson(origin, destination, travelMode, now);
 
