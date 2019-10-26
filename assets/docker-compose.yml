@@ -5,7 +5,8 @@ services:
     environment: 
       POSTGRES_PASSWORD: penisz123
     volumes: 
-      - /db-backup:/var/lib/postgresql/data
+     # - ./db-backup:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d/:ro
   adminer:
     image: adminer
     ports:
