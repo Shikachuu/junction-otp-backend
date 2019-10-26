@@ -1,63 +1,10 @@
 
+@DEPRECATED
 SELECT ST_Distance(ST_Transform(ST_LineFromEncodedPolyline('wow`HqbqsB}@u@QQwB_BCLBMhAv@DPFPFPBj@kFnRy@dDEd@wAbFcArDs@~BkAtDY~@m@xBa@pBaAhFCd@yCzLkDbN{EfReD`NeCtJaDrMeBzGe@tBuA|Fg@fB{@pCy@nCeApCs@fBk@zA{F`O]`AkBfF}@~AS@SE[Ec@CoEl@y@LmDvAoF~B_Bn@aAh@kAt@cDtBw@l@]RaCxG}@zCwBhGQh@QTe@TMBq@FQ@MBIBmBEcHIoDDyDIgBC_BEaBAiKOgCHm@Am@Cg@?e@?sCCMIgGYa@Cs@OICsAaA}@m@QOy@m@DOENqBuAyA{@y@e@EAGBcFmDuDiCAMSWYSGE'),23700),ST_Transform(ST_SetSRID(ST_MakePoint(19.074642,47.486211), 4326),23700));
 
 
+@UPDATED
+SELECT * FROM csv WHERE (SELECT ST_Distance(ST_Transform(ST_LineFromEncodedPolyline("+polyline+"),23700),ST_Transform(ST_SetSRID(ST_MakePoint(csv.geo_coord), 4326),23700)) < 1000);
 
-DROP TABLE IF EXISTS "csv";
-CREATE TABLE "public"."csv" (
-    "date" character(7) NOT NULL,
-    "deposit" boolean NOT NULL,
-    "zip_code" integer NOT NULL,
-    "city" character(25) NOT NULL,
-    "street_address" character(50) NOT NULL,
-    "geo_coord" point NOT NULL,
-    "trans_day" character(10) NOT NULL,
-    "0000-0030" integer NOT NULL,
-    "0030-0100" integer NOT NULL,
-    "0100-0130" integer NOT NULL,
-    "0130-0200" integer NOT NULL,
-    "0200-0230" integer NOT NULL,
-    "0230-0300" integer NOT NULL,
-    "0300-0330" integer NOT NULL,
-    "0330-4000" integer NOT NULL,
-    "0400-0430" integer NOT NULL,
-    "0430-0500" integer NOT NULL,
-    "0500-0530" integer NOT NULL,
-    "0530-0600" integer NOT NULL,
-    "0600-0630" integer NOT NULL,
-    "0630-0700" integer NOT NULL,
-    "0700-0730" integer NOT NULL,
-    "0730-0800" integer NOT NULL,
-    "0800-0830" integer NOT NULL,
-    "0830-0900" integer NOT NULL,
-    "0900-0930" integer NOT NULL,
-    "0930-1000" integer NOT NULL,
-    "1000-1030" integer NOT NULL,
-    "1030-1100" integer NOT NULL,
-    "1100-1130" integer NOT NULL,
-    "1130-1200" integer NOT NULL,
-    "1200-1230" integer NOT NULL,
-    "1230-1300" integer NOT NULL,
-    "1300-1330" integer NOT NULL,
-    "1330-1400" integer NOT NULL,
-    "1400-1430" integer NOT NULL,
-    "1430-1500" integer NOT NULL,
-    "1500-1530" integer NOT NULL,
-    "1530-1600" integer NOT NULL,
-    "1600-1630" integer NOT NULL,
-    "1630-1700" integer NOT NULL,
-    "1700-1730" integer NOT NULL,
-    "1730-1800" integer NOT NULL,
-    "1800-1830" integer NOT NULL,
-    "1830-1900" integer NOT NULL,
-    "1900-1930" integer NOT NULL,
-    "1930-2000" integer NOT NULL,
-    "2000-2030" integer NOT NULL,
-    "2030-2100" integer NOT NULL,
-    "2100-2130" integer NOT NULL,
-    "2130-2200" integer NOT NULL,
-    "2200-2230" integer NOT NULL,
-    "2230-2300" integer NOT NULL,
-    "2300-2330" integer NOT NULL,
-    "2330-2400" integer NOT NULL
-) WITH (oids = false);
+SELECT * FROM csv WHERE (SELECT ST_DWithin(ST_Transform(ST_LineFromEncodedPolyline('wow`HqbqsB}@u@QQwB_BCLBMhAv@DPFPFPBj@kFnRy@dDEd@wAbFcArDs@~BkAtDY~@m@xBa@pBaAhFCd@yCzLkDbN{EfReD`NeCtJaDrMeBzGe@tBuA|Fg@fB{@pCy@nCeApCs@fBk@zA{F`O]`AkBfF}@~AS@SE[Ec@CoEl@y@LmDvAoF~B_Bn@aAh@kAt@cDtBw@l@]RaCxG}@zCwBhGQh@QTe@TMBq@FQ@MBIBmBEcHIoDDyDIgBC_BEaBAiKOgCHm@Am@Cg@?e@?sCCMIgGYa@Cs@OICsAaA}@m@QOy@m@DOENqBuAyA{@y@e@EAGBcFmDuDiCAMSWYSGE'),23700),ST_Transform(csv.geo_coord,23700),1000));
+/* Type hibás de működő! */
