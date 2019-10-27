@@ -22,43 +22,44 @@ namespace junctionx_backend.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<RouteWithAtm> Get()
+        public IEnumerable<RouteWithAtm> Get(string origin, string destination, string travelMode="transit")
         {
             var googleApiFethcer = new GoogleApiFetcher();
             //var routes = googleApiFethcer.DemoFetch();
+            // "http://100.98.11.34:5002/atm?origin=47.475828,19.099312&destination=47.510687,19.055810"
+            var routes = googleApiFethcer.FetchAllRoutes(origin, destination, travelMode);
+            //var routes = new RouteWithAtm[]
+            //{
+            //    new RouteWithAtm
+            //    {
+            //        atm = new Atm
+            //        {
+            //            AtmPosition = "47.5147282, 19.099011",
+            //            ExpectedWaitTimeInMinutes = 3,
+            //            StreetName = "Szezám utca",
+            //        },
+            //        routeFromAtmToDestination = new Route
+            //        {
+            //            Polyline = "wow`HqbqsB}@u@QQwB_BCLBMhAv@DPFPFPBj@kFnRy@dDEd@wAbFcArDs@~BkAtDY~@m@xBa@pBaAhFCd@yCzLkDbN{EfReD`NeCtJaDrMeBzGe@tBuA|Fg@fB{@pCy@nCeApCs@fBk@zA{F`O]`AkBfF}@~AS@SE[Ec@CoEl@y@LmDvAoF~B_Bn@aAh@kAt@cDtBw@l@]RaCxG}@zCwBhGQh@QTe@TMBq@FQ@MBIBmBEcHIoDDyDIgBC_BEaBAiKOgCHm@Am@Cg@?e@?sCCMIgGYa@Cs@OICsAaA}@m@QOy@m@DOENqBuAyA{@y@e@EAGBcFmDuDiCAMSWYSGE",
+            //            UserInstructionsForRoute = "Mennyé előre",
+            //        }
 
-            var routes = new RouteWithAtm[]
-            {
-                new RouteWithAtm
-                {
-                    atm = new Atm
-                    {
-                        AtmPosition = "47.5147282, 19.099011",
-                        ExpectedWaitTimeInMinutes = 3,
-                        StreetName = "Szezám utca",
-                    },
-                    routeFromAtmToDestination = new Route
-                    {
-                        Polyline = "wow`HqbqsB}@u@QQwB_BCLBMhAv@DPFPFPBj@kFnRy@dDEd@wAbFcArDs@~BkAtDY~@m@xBa@pBaAhFCd@yCzLkDbN{EfReD`NeCtJaDrMeBzGe@tBuA|Fg@fB{@pCy@nCeApCs@fBk@zA{F`O]`AkBfF}@~AS@SE[Ec@CoEl@y@LmDvAoF~B_Bn@aAh@kAt@cDtBw@l@]RaCxG}@zCwBhGQh@QTe@TMBq@FQ@MBIBmBEcHIoDDyDIgBC_BEaBAiKOgCHm@Am@Cg@?e@?sCCMIgGYa@Cs@OICsAaA}@m@QOy@m@DOENqBuAyA{@y@e@EAGBcFmDuDiCAMSWYSGE",
-                        UserInstructionsForRoute = "Mennyé előre",
-                    }
-
-                }, 
-                new RouteWithAtm
-                {
-                    atm = new Atm
-                    {
-                        AtmPosition = "47.2147282, 19.199011",
-                        ExpectedWaitTimeInMinutes = 10,
-                        StreetName = "Kapa utca",
-                    },
-                    routeFromAtmToDestination = new Route
-                    {
-                        Polyline = "wow`HqbqsB}@u@QQwB_BCLBMhAv@DPFPFPBj@kFnRy@dDEd@wAbFcArDs@~BkAtDY~@m@xBa@pBaAhFCd@yCzLkDbN{EfReD`NeCtJaDrMeBzGe@tBuA|Fg@fB{@pCy@nCeApCs@fBk@zA{F`O]`AkBfF}@~AS@SE[Ec@CoEl@y@LmDvAoF~B_Bn@aAh@kAt@cDtBw@l@]RaCxG}@zCwBhGQh@QTe@TMBq@FQ@MBIBmBEcHIoDDyDIgBC_BEaBAiKOgCHm@Am@Cg@?e@?sCCMIgGYa@Cs@OICsAaA}@m@QOy@m@DOENqBuAyA{@y@e@EAGBcFmDuDiCAMSWYSGE",
-                        UserInstructionsForRoute = "Mennyé hátra",
-                    }
-                }
-            };
+            //    }, 
+            //    new RouteWithAtm
+            //    {
+            //        atm = new Atm
+            //        {
+            //            AtmPosition = "47.2147282, 19.199011",
+            //            ExpectedWaitTimeInMinutes = 10,
+            //            StreetName = "Kapa utca",
+            //        },
+            //        routeFromAtmToDestination = new Route
+            //        {
+            //            Polyline = "wow`HqbqsB}@u@QQwB_BCLBMhAv@DPFPFPBj@kFnRy@dDEd@wAbFcArDs@~BkAtDY~@m@xBa@pBaAhFCd@yCzLkDbN{EfReD`NeCtJaDrMeBzGe@tBuA|Fg@fB{@pCy@nCeApCs@fBk@zA{F`O]`AkBfF}@~AS@SE[Ec@CoEl@y@LmDvAoF~B_Bn@aAh@kAt@cDtBw@l@]RaCxG}@zCwBhGQh@QTe@TMBq@FQ@MBIBmBEcHIoDDyDIgBC_BEaBAiKOgCHm@Am@Cg@?e@?sCCMIgGYa@Cs@OICsAaA}@m@QOy@m@DOENqBuAyA{@y@e@EAGBcFmDuDiCAMSWYSGE",
+            //            UserInstructionsForRoute = "Mennyé hátra",
+            //        }
+            //    }
+            //};
 
             return routes;
 
