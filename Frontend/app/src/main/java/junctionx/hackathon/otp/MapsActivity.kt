@@ -285,7 +285,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val bestAtm = atms.minBy {
             it.estimatedTimeInMinutes
         }
+
+
         atmMarkers[bestAtm]?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+        currentPaths = bestAtm?.polylines
 
     }
 
