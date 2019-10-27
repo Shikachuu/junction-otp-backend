@@ -21,17 +21,12 @@ import com.google.android.gms.maps.model.*
 import com.google.maps.android.PolyUtil
 import org.json.JSONArray
 
-import java.net.URL
 import java.util.*
 import kotlin.collections.HashMap
-import android.widget.Toast
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener
-import androidx.core.app.ComponentActivity
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.widget.Switch
 import androidx.appcompat.app.AlertDialog
 
 
@@ -51,6 +46,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+    var needsDeposit: Boolean = false
+    set(value) {
+        refreshAtms()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -58,6 +58,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         progressBar = findViewById<ProgressBar>(R.id.progressBar)
 
+
+        val needsDepositSwitch = findViewById<Switch>(R.id.needs_deposit_switch)
+        needsDepositSwitch.setOnCheckedChangeListener { buttonView, isChecked -> needsDeposit = isChecked}
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -80,6 +83,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         public var estimatedTimeInMinutes: Double = 0.0;
         public var instructionText: String = "";
         public var polylines : Collection<String>? = null
+
     }
 
 
@@ -88,7 +92,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         val currentLocationAsString = ConvertLatlongToString(currentLocation!!)
         var ip = "100.98.11.34"
-        var url = "http://$ip:5000/atm?origin=$destination&destination=$currentLocationAsString"
+        var url = "http://$ip:5000/atm?origin=$destination&destination=$currentLocationAsString&needsdeposit=$needsDeposit"
 
 
         var jsonAsString = "" //URL(url).readText()
@@ -126,6 +130,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             atmInfo.instructionText = instructions
             atmInfo.polylines = listOf(polyline1!!, polyline2!!)
 
+
             atms.addElement(atmInfo)
         }
         return atms
@@ -152,20 +157,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
 
         mMap.setOnMapClickListener {
-            if(!isQueryRunning) {
-                isQueryRunning = true
-
-                var postitionAsString = ConvertLatlongToString(it)
-
-                Thread {
-                    val atms = FetchDataForDestination(postitionAsString)
-                    runOnUiThread {
-                        onAtmsFetched(atms)
-                        isQueryRunning = false
-                    }
-                }.start()
-
-            }
+            destinationLocation = it
+            refreshAtms()
 
         }
 
@@ -186,6 +179,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 //        google.maps.event.addListener(map, 'click', function(event) {
 //            placeMarker(event.latLng);
 //        });
+    }
+
+    fun refreshAtms() {
+        if (destinationLocation ==  null) {
+            return
+        }
+
+        if(!isQueryRunning) {
+            isQueryRunning = true
+
+            var postitionAsString = ConvertLatlongToString(destinationLocation!!)
+
+            Thread {
+                val atms = FetchDataForDestination(postitionAsString)
+                runOnUiThread {
+                    onAtmsFetched(atms)
+                    isQueryRunning = false
+                }
+            }.start()
+
+        }
     }
     fun onMarkerLongClick(marker: Marker) {
         val atm = atmMarkers.filterValues { value -> value == marker }.keys.firstOrNull()
@@ -291,6 +305,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+    var destinationLocation : LatLng? = null
 
     override fun onMarkerClick(marker: Marker?): Boolean {
         //val atmMarkers = atmMarkers.mapValues { v -> v }
