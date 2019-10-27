@@ -29,11 +29,7 @@ namespace GoogleMapsApi
          */
 
 
-<<<<<<< HEAD
-        readonly string API_KEY = "AIzaSyBxroruvIr2SKo6Y_t4hV3GtcucD9kmO5Y";
-=======
         readonly string API_KEY = "REDACTED";
->>>>>>> 28ec47c36b9d91d9973a43f1ef2b42b61ecbedbb
         readonly string GoogleApiBaseUrl = "https://maps.googleapis.com/maps/api/directions/json";
         readonly string AtmDatabaseUrl = "";
 
