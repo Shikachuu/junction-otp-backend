@@ -22,12 +22,12 @@ namespace junctionx_backend.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<RouteWithAtm> Get(string origin, string destination, string travelMode="transit")
+        public IEnumerable<RouteWithAtm> Get(string origin, string destination, string travelMode="transit", bool needsdeposit=false)
         {
             var googleApiFethcer = new GoogleApiFetcher();
             //var routes = googleApiFethcer.DemoFetch();
             // "http://100.98.11.34:5002/atm?origin=47.475828,19.099312&destination=47.510687,19.055810"
-            var routes = googleApiFethcer.FetchAllRoutes(origin, destination, travelMode);
+            var routes = googleApiFethcer.FetchAllRoutes(origin, destination, travelMode, needsdeposit);
             //var routes = new RouteWithAtm[]
             //{
             //    new RouteWithAtm

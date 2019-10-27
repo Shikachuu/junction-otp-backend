@@ -24,4 +24,10 @@
         android:foregroundGravity="top"
         android:visibility="invisible" />
 
+    <Switch
+        android:id="@+id/needs_deposit_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Deposit" />
+
 </RelativeLayout>

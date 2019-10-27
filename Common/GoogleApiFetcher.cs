@@ -29,7 +29,7 @@ namespace GoogleMapsApi
          */
 
 
-        readonly string API_KEY = "AIzaSyDf0hWOKngCVCBWZZ0OohTGIproR_VsLYc";
+        readonly string API_KEY = "[REDACTED]";
         readonly string GoogleApiBaseUrl = "https://maps.googleapis.com/maps/api/directions/json";
         readonly string AtmDatabaseUrl = "";
 
@@ -96,7 +96,7 @@ namespace GoogleMapsApi
             return 1.414 * sorbanAllokSzamaEbbenAFeloraban;
         }
 
-        public IEnumerable<Atm> FetchAtms(string encodedPolyline)
+        public IEnumerable<Atm> FetchAtms(string encodedPolyline, bool needsDeposit)
         {
 
             var now = DateTime.Now;
@@ -110,7 +110,8 @@ namespace GoogleMapsApi
 
             string timeFieldName = String.Format("{0}{1}-{2}{3}", hour.ToString("D2"), minutes.ToString("D2"), nextHour.ToString("D2"), nextMinutes.ToString("D2"));
 
-            var query = $"SELECT deposit, \"{timeFieldName}\", ST_AsText(geo_coord), zip_code, city, street_address, ST_Distance(ST_Transform(ST_LineFromEncodedPolyline('{encodedPolyline}'),23700),ST_Transform(csv.geo_coord,23700)) as distance FROM csv WHERE trans_day='SUNDAY' ORDER BY distance ASC LIMIT 10;";
+            string depositCondition = needsDeposit ? " and deposit=TRUE ": "";
+            var query = $"SELECT deposit, \"{timeFieldName}\", ST_AsText(geo_coord), zip_code, city, street_address, ST_Distance(ST_Transform(ST_LineFromEncodedPolyline('{encodedPolyline}'),23700),ST_Transform(csv.geo_coord,23700)) as distance FROM csv WHERE trans_day='SUNDAY' {depositCondition} ORDER BY distance ASC LIMIT 10;";
             //var query = "SELECT ST_Distance(ST_Transform(ST_LineFromEncodedPolyline('wow`HqbqsB}@u@QQwB_BCLBMhAv@DPFPFPBj@kFnRy@dDEd@wAbFcArDs@~BkAtDY~@m@xBa@pBaAhFCd@yCzLkDbN{EfReD`NeCtJaDrMeBzGe@tBuA|Fg@fB{@pCy@nCeApCs@fBk@zA{F`O]`AkBfF}@~AS@SE[Ec@CoEl@y@LmDvAoF~B_Bn@aAh@kAt@cDtBw@l@]RaCxG}@zCwBhGQh@QTe@TMBq@FQ@MBIBmBEcHIoDDyDIgBC_BEaBAiKOgCHm@Am@Cg@?e@?sCCMIgGYa@Cs@OICsAaA}@m@QOy@m@DOENqBuAyA{@y@e@EAGBcFmDuDiCAMSWYSGE'),23700),ST_Transform(ST_SetSRID(ST_MakePoint(19.074642,47.486211), 4326),23700));";
 
 
@@ -227,7 +228,7 @@ namespace GoogleMapsApi
             return routes;
         }
 
-        public IEnumerable<RouteWithAtm> FetchAllRoutes(string origin, string destination, string travelMode)
+        public IEnumerable<RouteWithAtm> FetchAllRoutes(string origin, string destination, string travelMode, bool needsDeposit)
         {
 
             DateTimeOffset now = DateTimeOffset.Now;
@@ -247,7 +248,7 @@ namespace GoogleMapsApi
             var allAtms = Enumerable.Empty<Atm>();
             foreach(var route in initialRoutes)
             {
-                var atms = FetchAtms(route.Polyline);
+                var atms = FetchAtms(route.Polyline, needsDeposit);
                 allAtms = Enumerable.Concat(allAtms, atms);
             }
             // FetchRouteIncludingAtm(string origin, string destination, string travelMode, Atm atm)
@@ -272,7 +273,7 @@ namespace GoogleMapsApi
             
             //FetchRoutes(origin, destination, travelMode, now);
 
-            var routes = FetchAllRoutes(origin, destination, travelMode);
+            var routes = FetchAllRoutes(origin, destination, travelMode, false);
 
             //public IEnumerable<Atm> FetchAtms(string encodedPolyline);
 
