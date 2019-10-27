@@ -27,8 +27,9 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener
 import android.widget.Switch
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-
+import java.net.URL
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -92,9 +93,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         val currentLocationAsString = ConvertLatlongToString(currentLocation!!)
         // TODO EZTIRDAT
-        var ip = "100.98.11.34"
-        var url = "http://$ip:5000/atm?origin=$destination&destination=$currentLocationAsString&needsdeposit=$needsDeposit"
-
+        var ip = "100.98.2.250"
+        var url = "http://$ip:80/atm?origin=$destination&destination=$currentLocationAsString&needsdeposit=$needsDeposit"
 
         var jsonAsString = URL(url).readText()
 
@@ -195,11 +195,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             var postitionAsString = ConvertLatlongToString(destinationLocation!!)
 
             Thread {
-                val atms = FetchDataForDestination(postitionAsString)
-                runOnUiThread {
-                    onAtmsFetched(atms)
-                    isQueryRunning = false
+                try {
+                    val atms = FetchDataForDestination(postitionAsString)
+                    runOnUiThread {
+                        onAtmsFetched(atms)
+                        isQueryRunning = false
+                    }
+                } catch (e : Exception) {
+                    runOnUiThread {
+                        Toast.makeText(this, "Network error", Toast.LENGTH_LONG).show()
+                    }
                 }
+
             }.start()
 
         }
