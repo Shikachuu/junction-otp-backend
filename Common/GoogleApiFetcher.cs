@@ -29,7 +29,7 @@ namespace GoogleMapsApi
          */
 
 
-        readonly string API_KEY = "[REDACTED]";
+        readonly string API_KEY = "AIzaSyBxroruvIr2SKo6Y_t4hV3GtcucD9kmO5Y";
         readonly string GoogleApiBaseUrl = "https://maps.googleapis.com/maps/api/directions/json";
         readonly string AtmDatabaseUrl = "";
 
@@ -93,7 +93,80 @@ namespace GoogleMapsApi
         // TODO szimulálni
         static double GetEstimatedTime(int sorbanAllokSzamaEbbenAFeloraban)
         {
-            return 1.414 * sorbanAllokSzamaEbbenAFeloraban;
+            double[] tabla = new double[70];
+            tabla[1] = 0;
+            tabla[2] = 0.5;
+            tabla[3] = 0.916269142391596;
+            tabla[4] = 1.33549997252668;
+            tabla[5] = 1.80066645349873;
+            tabla[6] = 2.26122022415258;
+            tabla[7] = 2.73661546132237;
+            tabla[8] = 3.21836107919091;
+            tabla[9] = 3.70368945637527;
+            tabla[10] = 4.17149335350352;
+            tabla[11] = 4.65676042037061;
+            tabla[12] = 5.15770972511779;
+            tabla[13] = 5.64033669295736;
+            tabla[14] = 6.12282696418097;
+            tabla[15] = 6.63125107281217;
+            tabla[16] = 7.10117506709994;
+            tabla[17] = 7.60828591116597;
+            tabla[18] = 8.10321175931482;
+            tabla[19] = 8.59908597447793;
+            tabla[20] = 9.09151356249327;
+            tabla[21] = 9.59281193580853;
+            tabla[22] = 10.0780547816022;
+            tabla[23] = 10.5727759109558;
+            tabla[24] = 11.0670291348599;
+            tabla[25] = 11.5693272863674;
+            tabla[26] = 12.0700451020897;
+            tabla[27] = 12.5715260073531;
+            tabla[28] = 13.0633682624301;
+            tabla[29] = 13.5712518750993;
+            tabla[30] = 14.0664535737293;
+            tabla[31] = 14.5669428427158;
+            tabla[32] = 15.0613835422497;
+            tabla[33] = 15.5676477411894;
+            tabla[34] = 16.0591975048867;
+            tabla[35] = 16.5494744585427;
+            tabla[36] = 17.048203679746;
+            tabla[37] = 17.5548750046842;
+            tabla[38] = 18.0469743450605;
+            tabla[39] = 18.5545150972237;
+            tabla[40] = 19.0458156908701;
+            tabla[41] = 19.548049491673;
+            tabla[42] = 20.049233522752;
+            tabla[43] = 20.539966525396;
+            tabla[44] = 21.0394536210809;
+            tabla[45] = 21.5401180437086;
+            tabla[46] = 22.0379017672667;
+            tabla[47] = 22.5371738936794;
+            tabla[48] = 23.0430421187565;
+            tabla[49] = 23.5349561456162;
+            tabla[50] = 24.0488515711748;
+            tabla[51] = 24.5369610714542;
+            tabla[52] = 25.0359333514409;
+            tabla[53] = 25.5358080496551;
+            tabla[54] = 26.0384255957907;
+            tabla[55] = 26.5262873190099;
+            tabla[56] = 27.0372122002914;
+            tabla[57] = 27.5309096256783;
+            tabla[58] = 28.0303799745553;
+            tabla[59] = 28.5340613314558;
+            tabla[60] = 29.0303550024333;
+            tabla[61] = 29.5356889646181;
+            tabla[62] = 30.0303479590804;
+            tabla[63] = 30.5318781080418;
+            tabla[64] = 31.0310942038018;
+            tabla[65] = 31.5358461622851;
+            tabla[66] = 32.0360237292308;
+            tabla[67] = 32.5356802245984;
+            tabla[68] = 33.0235170576985;
+            tabla[69] = 33.5261855478433;
+
+            
+            return tabla[Math.Min(sorbanAllokSzamaEbbenAFeloraban, 69)];
+            //return 1.414 * sorbanAllokSzamaEbbenAFeloraban;
         }
 
         public IEnumerable<Atm> FetchAtms(string encodedPolyline, bool needsDeposit)
