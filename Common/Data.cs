@@ -18,7 +18,7 @@ namespace GoogleMapsApi
     public class Route
     {
         public string Polyline { get; set; }
-        public string TravelTime { get; set; }
+        public double TravelTime { get; set; }
 
         public string UserInstructionsForRoute { get; set; }
 
@@ -27,7 +27,7 @@ namespace GoogleMapsApi
         {
             Route route = new Route();
             route.Polyline = routeJsonObject.GetProperty("overview_polyline").GetProperty("points").GetString();
-            route.TravelTime = routeJsonObject.GetProperty("legs")[0].GetProperty("duration").GetProperty("text").GetString();
+            route.TravelTime = routeJsonObject.GetProperty("legs")[0].GetProperty("duration").GetProperty("value").GetDouble() / 60.0;
             return route;
         }
     }
@@ -37,6 +37,6 @@ namespace GoogleMapsApi
         public Atm atm { get; set; }
         public Route routeFromDepartureToAtm { get; set; }
         public Route routeFromAtmToDestination { get; set; }
-        public Route totalTravelTime { get; set; }
+        public double totalTravelTime { get; set; }
     }
 }

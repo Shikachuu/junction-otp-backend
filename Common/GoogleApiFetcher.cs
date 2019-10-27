@@ -194,11 +194,16 @@ namespace GoogleMapsApi
 
             var routesFromAtm = FetchRoutes(atmFormattedPos, destination, travelMode, expectedDepartureTimeFromAtm);
 
+            var first = routesToAtm.First() ?? throw new Exception("Penis a kugli pls.");
+            var second = routesFromAtm.First() ?? throw new Exception("Penis a kugli pls.");
+
+
             var finalRoute = new RouteWithAtm
             {
                 atm = atm,
-                routeFromDepartureToAtm = routesToAtm.First() ?? throw new Exception("Penis a kugli pls."),
-                routeFromAtmToDestination = routesFromAtm.First() ?? throw new Exception("Penis a kugli pls."),
+                routeFromDepartureToAtm = first,
+                routeFromAtmToDestination = second,
+                totalTravelTime = atm.ExpectedWaitTimeInMinutes + first.TravelTime + second.TravelTime,
             };
 
 
