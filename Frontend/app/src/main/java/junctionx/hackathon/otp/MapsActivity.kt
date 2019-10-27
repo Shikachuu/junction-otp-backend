@@ -7,6 +7,8 @@ import android.location.LocationListener
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.ProgressBar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
@@ -25,10 +27,24 @@ import java.util.*
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
+    lateinit var progressBar :ProgressBar
+    var isQueryRunning: Boolean = false
+    set(value: Boolean) {
+        runOnUiThread {
+
+            progressBar.visibility = if ( value ) View.VISIBLE else View.INVISIBLE;
+
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_maps)
+
+        progressBar = findViewById<ProgressBar>(R.id.progressBar)
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
@@ -61,6 +77,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
         var jsonAsString = "" //URL(url).readText()
+        Thread.sleep(2000)
         jsonAsString = """[{"atm":{"atmPosition":"POINT(19.089672 47.478868)","streetName":"NAGYVÁRAD TÉR                                     ","expectedWaitTimeInMinutes":0},"routeFromDepartureToAtm":{"polyline":"ssw`HejqsBMj@f@\\f@^B^I@}@GiAw@CLBMhAv@FVLXB`@Gb@i@jBcF~QSdAARKb@_@nAiCdJeAhDq@tBGGFFGRCl@]dBH^XkA","travelTime":6.133333333333334,"userInstructionsForRoute":null},"routeFromAtmToDestination":{"polyline":"{ex`HmmosBYjAI_@\\eBBm@FSGGFFSl@s@xC{@tEW`BAN_AzDm@`CsBfIwFrT{BfJwA~FkCbKaHzXqBtIc@|A}BvH_CdGkHfR_CrG}@~AS@g@I]C[AcAPmDf@mAb@qIpD_Bn@w@^q@f@_EbCkA~@YNaBpEgAhD{AvE}@hCQ\\IFi@R[Fy@DE@W@yIKe@AoDDyDIgBC_BEaBAiKOgCHm@Am@CMAE]Ke@Oa@KKEIs@qAiEyGEUw@eBKSCGMPiDnECGBF]d@aApB_@v@EPG`@UQ@HADAD?@","travelTime":19.866666666666667,"userInstructionsForRoute":null},"totalTravelTime":26},{"atm":{"atmPosition":"POINT(19.089672 47.478868)","streetName":"NAGYVÁRAD TÉR METRÓÁLLOMÁS                        ","expectedWaitTimeInMinutes":0},"routeFromDepartureToAtm":{"polyline":"ssw`HejqsBMj@f@\\f@^B^I@}@GiAw@CLBMhAv@FVLXB`@Gb@i@jBcF~QSdAARKb@_@nAiCdJeAhDq@tBGGFFGRCl@]dBH^XkA","travelTime":6.133333333333334,"userInstructionsForRoute":null},"routeFromAtmToDestination":{"polyline":"{ex`HmmosBYjAI_@\\eBBm@FSGGFFSl@s@xC{@tEW`BAN_AzDm@`CsBfIwFrT{BfJwA~FkCbKaHzXqBtIc@|A}BvH_CdGkHfR_CrG}@~AS@g@I]C[AcAPmDf@mAb@qIpD_Bn@w@^q@f@_EbCkA~@YNaBpEgAhD{AvE}@hCQ\\IFi@R[Fy@DE@W@yIKe@AoDDyDIgBC_BEaBAiKOgCHm@Am@CMAE]Ke@Oa@KKEIs@qAiEyGEUw@eBKSCGMPiDnECGBF]d@aApB_@v@EPG`@UQ@HADAD?@","travelTime":19.866666666666667,"userInstructionsForRoute":null},"totalTravelTime":26},{"atm":{"atmPosition":"POINT(19.098792 47.474856)","streetName":"ÜLLÕI ÚT 131.                                     ","expectedWaitTimeInMinutes":0},"routeFromDepartureToAtm":{"polyline":"ssw`HejqsBMj@f@\\x@n@`BtA","travelTime":2.4833333333333334,"userInstructionsForRoute":null},"routeFromAtmToDestination":{"polyline":"}mw`HucqsB[Uw@s@K@O@]@i@GiAw@CLBMhAv@DPFPFP@P@XOl@{E`Qe@hBWfAAXYbAaCrIiArDoA`Em@xBI^yAzHCd@{AjG{B|IyHpZkCtK{A`GaDjMsArFeBzGkB|H[tAwAxEy@nCeApCs@fBgH|Q]`AkBfF}@~AS@SE[Ec@Ck@H}Ep@mDvAuB|@_EbB{Av@yClBuA|@w@l@]RaCxGkB`GoArDKXQTk@VMBu@F_@F}EI{CEqCDqHMsDGs@?_EGiEGgCHyAEOAKu@Uo@_@k@e@{@iEyGQq@{@eBgCfDo@x@CGBFY^}@dBg@hAMr@UQ@FAD?FA@","travelTime":22.816666666666666,"userInstructionsForRoute":null},"totalTravelTime":25.3},{"atm":{"atmPosition":"POINT(19.09732 47.475238)","streetName":"KÖNYVES K. KRT. 34-36.                            ","expectedWaitTimeInMinutes":0},"routeFromDepartureToAtm":{"polyline":"ssw`HejqsBMj@f@\\f@^B^D?HAHh@Hn@XXr@h@","travelTime":2.9,"userInstructionsForRoute":null},"routeFromAtmToDestination":{"polyline":"{mw`H_aqsBiB{AoAeAiAw@CLBMhAv@FVLXB`@Gb@i@jBcF~QSdAARKb@_@nAiCdJkClIs@xC{@tEW`BAN_AzDm@`CsBfIwFrT{@nDwCvLkCbK}CbMcCvJqBtIc@|A}BvH_CdGkHfR_CrG}@~AS@g@I]C[AcAPmDf@mAb@qIpD_Bn@w@^q@f@_EbCkA~@YNaBpEgAhD{AvE}@hCQ\\IFi@R[Fi@BO@E@W@yIKe@AoDDyDIgBC_BEaBAiKOgCHm@Am@CMAE]Ke@Oa@KKEIs@qAiEyGEUw@eBKSCGMPiDnECGBF]d@aApB_@v@EPG`@UQ@HADAD?@","travelTime":22.933333333333334,"userInstructionsForRoute":null},"totalTravelTime":25.833333333333332},{"atm":{"atmPosition":"POINT(19.087352 47.478773)","streetName":"HALLER U. 84-86.                                  ","expectedWaitTimeInMinutes":0},"routeFromDepartureToAtm":{"polyline":"ssw`HejqsBMj@f@\\f@^B^I@}@GiAw@CLBMhAv@FVLXB`@Gb@i@jBcF~QSdAARKb@_@nAiCdJeAhDq@tBGGFFGRCl@]dBQr@d@rA~@tCf@~A]VOLGO","travelTime":8.533333333333333,"userInstructionsForRoute":null},"routeFromAtmToDestination":{"polyline":"ydx`Hm_osBFNNM\\Wg@_B_AuCe@sAn@yCBm@FSGGFFSl@e@pBMf@{@tEW`BAN_AzDm@`Cu@|CaFtRmBzH{@dDoAfFiGnVoCvKaA|DyAjGa@bBs@bCcBvFmA|CyFhOcBdE_CrG}@~AS@g@Iy@EqFx@mAb@sBx@gFzBuAj@w@^q@f@oBjAoAv@g@`@c@\\YNaBpEgAhDe@xAkBtFYn@m@XOBs@F]DW@yBEeGGoDDyDIgBC_BEaBAiKOgCHm@Am@CMAE]Ke@Oa@KKEIs@qAiEyGEUw@eBKSCGMPiDnECGBF]d@aApB_@v@EPG`@UQ@HAJA@","travelTime":22.233333333333334,"userInstructionsForRoute":null},"totalTravelTime":30.766666666666666},{"atm":{"atmPosition":"POINT(19.089588 47.4781)","streetName":"NAGYVÁRAD TÉR 1.                                  ","expectedWaitTimeInMinutes":0},"routeFromDepartureToAtm":{"polyline":"ssw`HejqsBMj@f@\\f@^B^I@}@GiAw@CLBMhAv@FVLXB`@Gb@i@jBcF~QSdAARKb@_@nAiCdJeAhDq@tBGGFFGRCl@]dBn@`C`AbDnCnIz@w@`Ay@_@oAi@aBa@{AyA}ECKBMHK","travelTime":12.95,"userInstructionsForRoute":null},"routeFromAtmToDestination":{"polyline":"{`x`HolosBKRAH|@tCzAhFn@rBeBzAWTcA}CqBmGgA_ECINq@Ls@Bm@FSGGFFGRm@xBI^yAzHCd@{AjG{B|IyHpZkCtK{A`GaDjMsArFeBzGkB|H[tAwAxEy@nCeApCs@fBgH|Q]`AkBfF}@~AS@SE[Ec@Ck@H}Ep@mDvAuB|@_EbB{Av@yClBuA|@w@l@]RaCxGkB`GoArDKXQTk@VMBu@F_@F}EI{CEqCDqHMsDGs@?_EGiEGgCHyAEOAKu@Uo@_@k@e@{@iEyGQq@{@eBqE`G}@dBe@dACFm@N_Aq@DOENjA~@?NAD?@","travelTime":24.6,"userInstructionsForRoute":null},"totalTravelTime":37.55},{"atm":{"atmPosition":"POINT(19.074642 47.486211)","streetName":"TINÓDI UTCA 9-11.                                 ","expectedWaitTimeInMinutes":0},"routeFromDepartureToAtm":{"polyline":"ssw`HejqsBMj@f@\\f@^B^I@}@GiAw@CLBMhAv@FVLXB`@Gb@i@jBcF~QSdAARKb@_@nAiCdJkClIs@xC{@tEW`BAN_AzDm@`CsBfIwFrT{@nDGEFDYhAoAfFiGnVQr@kBI_CMsAAiAA","travelTime":14.8,"userInstructionsForRoute":null},"routeFromAtmToDestination":{"polyline":"ysy`HuolsBi@EQAu@CD`F@lSvBVa@VBW{AO}CSkIu@eGc@yFc@cDQuBKoAJoLl@cBLcB\\q@JuBPeEr@SHs@b@iDdCiBhAq@j@iGrGcGlHs@r@cApAgEhFm@~@kBnCaCrD{I`O{DhGmBlCcAvAYh@_AzBGGf@eBo@rA_@v@EPG`@UQ@HADAD?@","travelTime":18.533333333333335,"userInstructionsForRoute":null},"totalTravelTime":33.333333333333336},{"atm":{"atmPosition":"POINT(19.092216 47.475556)","streetName":"GYÁLI ÚT 7.                                       ","expectedWaitTimeInMinutes":0},"routeFromDepartureToAtm":{"polyline":"ssw`HejqsBMj@f@\\f@^B^D?HAHh@Hn@XXdBrAnAdAtDvCdB~AHFZ^o@|@sCjDz@~BgAbAaAr@e@^CN?HLf@mArAYd@WT_@RUBe@N","travelTime":12.5,"userInstructionsForRoute":null},"routeFromAtmToDestination":{"polyline":"apw`Hs|osBd@OTC^SVUXe@lAsAMg@?IBOd@_@`As@fAcA{@_CiApAaDxDqMtOSe@SYmAi@u@s@[NUDGRc@vAq@tBGGFFSl@e@pBMf@{@tEW`BAN_AzDm@`Cu@|CaFtRmBzH{@dDoAfFiGnVoCvKaA|DyAjGa@bBs@bCcBvFmA|CyFhOcBdE_CrG}@~AS@g@Iy@EqFx@mAb@sBx@gFzBuAj@w@^q@f@oBjAoAv@g@`@c@\\YNaBpEgAhDe@xAkBtFYn@m@XOBs@F]DW@yBEeGGoDDyDIgBC_BEaBAiKOgCHm@Am@CMAE]Ke@Oa@KKEIs@qAiEyGEUw@eBKSCGMPiDnECGBF]d@aApB_@v@EPG`@UQ@HAJA@","travelTime":31.55,"userInstructionsForRoute":null},"totalTravelTime":44.05},{"atm":{"atmPosition":"POINT(19.065962 47.483543)","streetName":"BAKÁTS TÉR 14.                                    ","expectedWaitTimeInMinutes":1.414},"routeFromDepartureToAtm":{"polyline":"ssw`HejqsBMj@f@\\f@^B^I@}@GiAw@CLBMhAv@FVLXB`@Gb@i@jBcF~QSdAARKb@_@nAiCdJkClIs@xC{@tEW`BAN_AzDm@`CsBfIwFrT{@nDwCvLkCbK}CbMcCvJqBtIc@|AY~@i@fBSQRPy@nCjEzKnB`FdHsE","travelTime":15.033333333333333,"userInstructionsForRoute":null},"routeFromAtmToDestination":{"polyline":"acy`HayjsBl@a@Qg@eBwF|A{ANu@j@iBDWBOn@NtA^~@Vd@RFURc@PYDJ]lBs@a@uAc@cAU_IaC_Ck@qCeAgA]eAOuCQiD]uL{@mD[eEYsDQWAk@FcH^iG\\}Bb@gBNwEt@q@NkE|CqBnAe@\\mFtFcBlBkElFm@n@mAxAaFhGqB|CaB`Ce@v@uIvN_ErG[\\aDtEq@pAg@rAGGf@eBg@`Ag@hAMr@UQ@FAD?FA@","travelTime":20.55,"userInstructionsForRoute":null},"totalTravelTime":36.99733333333333},{"atm":{"atmPosition":"POINT(19.068655 47.48192)","streetName":"FERENC KRT. 13.                                   ","expectedWaitTimeInMinutes":5.656},"routeFromDepartureToAtm":{"polyline":"ssw`HejqsBMj@f@\\f@^B^I@}@GiAw@CLBMhAv@FVLXB`@Gb@i@jBcF~QSdAARKb@_@nAiCdJkClIs@xC{@tEW`BAN_AzDm@`CsBfIwFrT{@nDwCvLkCbK}CbMcCvJqBtIc@|AY~@i@fBSQRPh@gBPi@`@_@j@WRFhDbAD]?ABEnHvBvA\\|A`@l@V","travelTime":15.2,"userInstructionsForRoute":null},"routeFromAtmToDestination":{"polyline":"_yx`HcjksBt@u@@D]lBQKu@_@cA[yBi@eGiBeAWcCu@kBu@aAS{AO}CSkIu@cEW{Ho@uF[c@AoAJsNt@_@DcB\\}APiAJeEr@SHs@b@iDdCiBhAq@j@kDpD}A`BiFnGmApAkGzHwB`DaCpDqCtEkFzI{DhGmBlCcAvAYh@_AzBGGf@eBo@rA_@v@EPG`@UQ@HAJA@","travelTime":14.816666666666666,"userInstructionsForRoute":null},"totalTravelTime":35.672666666666665}]"""
         //var rootObject = JSONObject(jsonAsString)
 
@@ -109,13 +126,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
 
         mMap.setOnMapClickListener {
-            var postitionAsString = ConvertLatlongToString(it)
-            Thread {
-                val atms = FetchDataForDestination(postitionAsString)
-                runOnUiThread {
-                    onAtmsFetched(atms)
-                }
-            }.start()
+            if(!isQueryRunning) {
+                isQueryRunning = true
+
+                var postitionAsString = ConvertLatlongToString(it)
+
+                Thread {
+                    val atms = FetchDataForDestination(postitionAsString)
+                    runOnUiThread {
+                        onAtmsFetched(atms)
+                        isQueryRunning = false
+                    }
+                }.start()
+
+            }
+
 
         }
 
