@@ -17,6 +17,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.maps.android.PolyUtil
 import org.json.JSONArray
 
 import java.net.URL
@@ -24,7 +25,8 @@ import java.util.*
 import kotlin.collections.HashMap
 
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+
 
     private var currentPositionMarker: Marker? = null
     private lateinit var mMap: GoogleMap
@@ -66,6 +68,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     class AtmInfo(val postion: LatLng) {
         public var estimatedTimeInMinutes: Double = 0.0;
         public var instructionText: String = "";
+        public var polylines : Collection<String>? = null
     }
 
 
@@ -91,6 +94,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val instructions1 = item.getJSONObject("routeFromDepartureToAtm").optJSONObject("userInstructionsForRoute")
             val instructions2 = item.getJSONObject("routeFromAtmToDestination").optJSONObject("userInstructionsForRoute")
 
+
+            val polyline1 = item.getJSONObject("routeFromDepartureToAtm").optString("polyline")
+            val polyline2 = item.getJSONObject("routeFromAtmToDestination").optString("polyline")
+
             val instructions = "${instructions1}\nUse ATM\n${instructions2}"
 
 
@@ -106,6 +113,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             var atmInfo = AtmInfo(position)
             atmInfo.estimatedTimeInMinutes = totalTravelTime
             atmInfo.instructionText = instructions
+            atmInfo.polylines = listOf(polyline1!!, polyline2!!)
 
             atms.addElement(atmInfo)
         }
@@ -123,7 +131,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 //        val sydney = LatLng(-34.0, 151.0)
 //        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-
+        googleMap.setOnMarkerClickListener(this);
 
         val markerOptions = MarkerOptions().position(currentLocation).title("You are here")
             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
@@ -158,7 +166,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 //        });
     }
 
+    var goolgeMapsPolylines: Collection<Polyline>? = null
     var atmMarkers: HashMap<AtmInfo, Marker> = HashMap()
+
+    var currentPaths: Collection<String>? = null
+    set(value) {
+        goolgeMapsPolylines?.forEach {
+            it.remove()
+        }
+
+        goolgeMapsPolylines = value?.map {
+                str -> val coordinates : List<LatLng> = PolyUtil.decode(str)
+                mMap.addPolyline(PolylineOptions().addAll(coordinates))
+        }
+
+    }
+
+    var highlightedAtm: AtmInfo? = null
+    set(newAtm) {
+        currentPaths = newAtm?.polylines
+    }
 
     private fun onAtmsFetched(atms: Vector<AtmInfo>) {
         atmMarkers.forEach {
@@ -170,9 +197,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             return
         }
 
+
         atms.forEach {
 
             val marker = mMap.addMarker(MarkerOptions().position(it.postion).title(it.estimatedTimeInMinutes.toString()))
+
             atmMarkers.set(it, marker)
         }
 
@@ -213,6 +242,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         runOnUiThread {
             currentPositionMarker?.position = value
         }
+    }
+
+
+    override fun onMarkerClick(marker: Marker?): Boolean {
+        //val atmMarkers = atmMarkers.mapValues { v -> v }
+        val atm: AtmInfo? = atmMarkers.filterValues { _marker -> _marker == marker }.keys.single()
+        if(atm != null) {
+            ShowRouteForAtm(atm)
+            return true
+        }
+        return false
+        //atmMarkers.values.find { _marker -> _marker == marker }
+    }
+
+    fun ShowRouteForAtm(atm: AtmInfo) {
+        atmMarkers[atm]?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+        currentPaths = atm.polylines
     }
 
     var locationListener = object : LocationListener{
