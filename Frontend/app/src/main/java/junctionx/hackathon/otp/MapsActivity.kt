@@ -16,16 +16,17 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import org.json.JSONArray
 
 import java.net.URL
 import java.util.*
+import kotlin.collections.HashMap
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    private var currentPositionMarker: Marker? = null
     private lateinit var mMap: GoogleMap
     lateinit var progressBar :ProgressBar
     var isQueryRunning: Boolean = false
@@ -123,7 +124,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 //        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+
+        val markerOptions = MarkerOptions().position(currentLocation).title("You are here")
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+        currentPositionMarker = mMap.addMarker(markerOptions)
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12.0f));
+
 
         mMap.setOnMapClickListener {
             if(!isQueryRunning) {
@@ -151,11 +158,35 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 //        });
     }
 
-    private fun onAtmsFetched(atms: Vector<MapsActivity.AtmInfo>) {
+    var atmMarkers: HashMap<AtmInfo, Marker> = HashMap()
+
+    private fun onAtmsFetched(atms: Vector<AtmInfo>) {
+        atmMarkers.forEach {
+            it.value.remove()
+        }
+        atmMarkers.clear()
+
+        if(atms.count() == 0) {
+            return
+        }
+
         atms.forEach {
 
-            mMap.addMarker(MarkerOptions().position(it.postion).title(it.estimatedTimeInMinutes.toString()))
+            val marker = mMap.addMarker(MarkerOptions().position(it.postion).title(it.estimatedTimeInMinutes.toString()))
+            atmMarkers.set(it, marker)
         }
+
+        FindAndMarkBestAtm(atms)
+
+
+    }
+
+    fun FindAndMarkBestAtm(atms: Vector<AtmInfo>) {
+        val bestAtm = atms.minBy {
+            it.estimatedTimeInMinutes
+        }
+        atmMarkers[bestAtm]?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+
     }
 
     var locationManager : LocationManager? = null
@@ -178,6 +209,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     var currentLocation : LatLng = LatLng(47.475312, 19.099319)
+    set(value) {
+        runOnUiThread {
+            currentPositionMarker?.position = value
+        }
+    }
 
     var locationListener = object : LocationListener{
         override fun onLocationChanged(location: Location?) {
