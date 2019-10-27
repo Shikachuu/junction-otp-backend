@@ -1,6 +1,7 @@
 package junctionx.hackathon.otp
 
 import android.Manifest
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -23,6 +24,16 @@ import org.json.JSONArray
 import java.net.URL
 import java.util.*
 import kotlin.collections.HashMap
+import android.widget.Toast
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener
+import androidx.core.app.ComponentActivity
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import androidx.appcompat.app.AlertDialog
+
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -156,14 +167,50 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
             }
 
-
         }
+
+        googleMap.setOnMapLongClickListener(OnMapLongClickListener { latLng ->
+            for (marker in atmMarkers.values) {
+                if (Math.abs(marker.getPosition().latitude - latLng.latitude) < 0.05 && Math.abs(
+                        marker.getPosition().longitude - latLng.longitude
+                    ) < 0.05
+                ) {
+                    onMarkerLongClick(marker)
+                    break
+                }
+            }
+        })
 
         getLocation()
 
 //        google.maps.event.addListener(map, 'click', function(event) {
 //            placeMarker(event.latLng);
 //        });
+    }
+    fun onMarkerLongClick(marker: Marker) {
+        val atm = atmMarkers.filterValues { value -> value == marker }.keys.firstOrNull()
+        if(atm != null) {
+            showReportAtmDialog(atm)
+        }
+
+    }
+
+    fun reportAtm(atm: AtmInfo) {
+
+    }
+
+    fun showReportAtmDialog(atm: AtmInfo) {
+        val dialogClickListener = DialogInterface.OnClickListener { dialogInterface: DialogInterface, which: Int ->
+            if(which == DialogInterface.BUTTON_POSITIVE) {
+                reportAtm(atm)
+            }
+        }
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("Do you want to report this ATM as faulty?")
+            .setPositiveButton("Yes", dialogClickListener)
+            .setNegativeButton("No", dialogClickListener)
+            .show()
+
     }
 
     var goolgeMapsPolylines: Collection<Polyline>? = null
@@ -247,10 +294,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onMarkerClick(marker: Marker?): Boolean {
         //val atmMarkers = atmMarkers.mapValues { v -> v }
-        val atm: AtmInfo? = atmMarkers.filterValues { _marker -> _marker == marker }.keys.single()
+        val atm: AtmInfo? = atmMarkers.filterValues { _marker -> _marker == marker }.keys.singleOrNull()
         if(atm != null) {
             ShowRouteForAtm(atm)
-            return true
+            //return true
         }
         return false
         //atmMarkers.values.find { _marker -> _marker == marker }
