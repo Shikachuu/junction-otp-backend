@@ -197,8 +197,8 @@ namespace GoogleMapsApi
             var finalRoute = new RouteWithAtm
             {
                 atm = atm,
-                routeFromDepartureToAtm = routesToAtm.First(),
-                routeFromAtmToDestination = routesFromAtm.First(),
+                routeFromDepartureToAtm = routesToAtm.First() ?? throw new Exception("Penis a kugli pls."),
+                routeFromAtmToDestination = routesFromAtm.First() ?? throw new Exception("Penis a kugli pls."),
             };
 
 
